@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <title>DNS tester</title>
+    <style>
+    </style>
+    
+  </head>
+  <body>
+    <div class="jumbotron jumbotron-fluid text-center bg-light text-">
+        <h1 class="display-4">DNS tester </h1>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col">
+            <form class="lead">
+                <div class="radio">
+                  <label><input type="radio" name="optradio" checked>Domain Generation Algorithms -DGAs-</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" name="optradio">DNS Exfiltration</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="optradio">DNS tunneling</label>
+                  </div>
+              </form>
+          </div>
+          <div class="col">
+            <label for="exfildom">Domain to exfiltrate data to:</label>
+            <textarea id="exfildom" class="form-control">h4xh4xh4x.com</textarea>
+            <label for="exfil">Data to exfiltrate:</label>
+            <textarea id="exfil" class="form-control" rows="30"></textarea>
+            <div class="button">
+                <button onclick="myFunctionExf()" type="button">Exfiltrate data using dns</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+    -->
+    <script>
+        async function myFunctionExf(){
+            var b = window.location.href
+            let url = new URL ('exfil', b)
+            var t = document.getElementById("exfil").value;
+            var exfildom = document.getElementById("exfildom").value;
+            if (t.length > 0) {
+                var parts = t.match(/[\s\S]{1,45}/g) || [];
+                for (i = 0; i < parts.length; i++) {
+                console.log(parts[i])
+                var d = btoa(unescape(encodeURIComponent(parts[i])))
+                var data = {data: d , domain: exfildom};
+                try{
+                let response = await fetch(url, {
+                method: 'POST', // or 'PUT'
+                body: JSON.stringify(data), // data can be `string` or {object}!
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                })
+                if (response.status !== 200) {
+                console.log('Looks like there was a problem. Status Code: ' +
+                    response.status);
+                r = "";
+                }else{
+                await response.text().then(function (text) {
+                    r=text;
+                });
+
+                }
+                }catch(error) {
+                        console.error(error);
+                }
+                }
+            }
+            else{
+                window.alert("please add some data to exfiltrate");
+            }
+        }
+    </script>
+  </body>
+</html>
